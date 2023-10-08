@@ -7,11 +7,10 @@ const pkg = require('vitepress/package.json')
 export default defineConfig({
   lang: 'en-US',
   title: 'VitePress',
+  base: '/static_blog/',
   description: 'Vite & Vue powered static site generator.',
-
   lastUpdated: true,
   cleanUrls: true,
-
   markdown: {
     math: true
   },
