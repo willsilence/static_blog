@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "../../.."
+		},
+		{
+			"path": "../../../../../Downloads/vitepress-main"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "static"
+	}
+}
