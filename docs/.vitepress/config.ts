@@ -1,177 +1,116 @@
-import { createRequire } from 'module'
-import { defineConfig, type DefaultTheme } from 'vitepress'
+import process from 'node:process'
+import { defineConfig } from 'vitepress'
+import { withPwa } from '@vite-pwa/vitepress'
+import { generateSitemap as sitemap } from 'sitemap-ts'
+import { description, docsVersion, github, keywords, name, site } from './meta'
+import { genFeed } from './plugins/genFeed'
+import { pwa } from './plugins/pwa'
+import sidebar from './sidebar'
+import socialLinks from './link'
+import algolia from './algolia'
 
-const require = createRequire(import.meta.url)
-const pkg = require('vitepress/package.json')
-
-export default defineConfig({
-  lang: 'zh-CN',
-  title: '陈珈禾的宝藏空间',
+export default withPwa(defineConfig({
+  pwa,
   base: '/static_blog/',
-  description: '陈珈禾的宝藏空间 分享日常笔记',
+  outDir: '../dist',
+  title: name,
+  description,
+  appearance: 'dark',
   lastUpdated: true,
-  cleanUrls: true,
+  useWebFonts: false,
   markdown: {
-    math: true
+    lineNumbers: true,
   },
-  sitemap: {
-    hostname: 'https://vitepress.dev',
-    transformItems(items) {
-      return items.filter((item) => !item.url.includes('migration'))
-    }
+  locales: {
+    root: { label: '简体中文', lang: 'zh-CN' },
   },
-
-  /* prettier-ignore */
-  head: [
-    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/logo.png' }],
-    ['link', { rel: 'icon', type: 'image/png', href: '/logo.png' }],
-    // ['meta', { name: 'theme-color', content: '#5f67ee' }],
-    // ['meta', { name: 'og:type', content: 'website' }],
-    // ['meta', { name: 'og:locale', content: 'en' }],
-    // ['meta', { name: 'og:site_name', content: 'VitePress' }],
-    // ['meta', { name: 'og:image', content: 'https://vitepress.dev/vitepress-og.jpg' }],
-    // ['script', { src: 'https://cdn.usefathom.com/script.js', 'data-site': 'AZBRSFGG', 'data-spa': 'auto', defer: '' }]
-  ],
-
   themeConfig: {
-    logo: { src: '/logo.png', width: 24, height: 24 },
-    nav: [
-      // {
-      //   text: 'Guide',
-      //   link: '/guide/what-is-vitepress',
-      //   activeMatch: '/guide/'
-      // },
-      // {
-      //   text: 'Reference',
-      //   link: '/reference/site-config',
-      //   activeMatch: '/reference/'
-      // },
-      // {
-      //   text: pkg.version,
-      //   items: [
-      //     {
-      //       text: 'Changelog',
-      //       link: 'https://github.com/vuejs/vitepress/blob/main/CHANGELOG.md'
-      //     },
-      //     {
-      //       text: 'Contributing',
-      //       link: 'https://github.com/vuejs/vitepress/blob/main/.github/contributing.md'
-      //     }
-      //   ]
-      // }
-    ],
-    sidebar: {
-      // '/guide/': {
-      //   base: '/guide/', items: [
-      //     {
-      //       text: 'Introduction',
-      //       collapsed: false,
-      //       items: [
-      //         { text: 'What is VitePress?', link: 'what-is-vitepress' },
-      //         { text: 'Getting Started', link: 'getting-started' },
-      //         { text: 'Routing', link: 'routing' },
-      //         { text: 'Deploy', link: 'deploy' }
-      //       ]
-      //     },
-      //     {
-      //       text: 'Writing',
-      //       collapsed: false,
-      //       items: [
-      //         { text: 'Markdown Extensions', link: 'markdown' },
-      //         { text: 'Asset Handling', link: 'asset-handling' },
-      //         { text: 'Frontmatter', link: 'frontmatter' },
-      //         { text: 'Using Vue in Markdown', link: 'using-vue' },
-      //         { text: 'Internationalization', link: 'i18n' }
-      //       ]
-      //     },
-      //     {
-      //       text: 'Customization',
-      //       collapsed: false,
-      //       items: [
-      //         { text: 'Using a Custom Theme', link: 'custom-theme' },
-      //         { text: 'Extending the Default Theme', link: 'extending-default-theme' },
-      //         { text: 'Build-Time Data Loading', link: 'data-loading' },
-      //         { text: 'SSR Compatibility', link: 'ssr-compat' },
-      //         { text: 'Connecting to a CMS', link: 'cms' }
-      //       ]
-      //     },
-      //     {
-      //       text: 'Experimental',
-      //       collapsed: false,
-      //       items: [
-      //         { text: 'MPA Mode', link: 'mpa-mode' },
-      //         { text: 'Sitemap Generation', link: 'sitemap-generation' }
-      //       ]
-      //     },
-      //     { text: 'Config & API Reference', base: '/reference/', link: 'site-config' }
-      //   ]
-      // },
-      // '/reference/': {
-      //   base: '/reference/', items: [
-      //     {
-      //       text: 'Reference',
-      //       items: [
-      //         { text: 'Site Config', link: 'site-config' },
-      //         { text: 'Frontmatter Config', link: 'frontmatter-config' },
-      //         { text: 'Runtime API', link: 'runtime-api' },
-      //         { text: 'CLI', link: 'cli' },
-      //         {
-      //           text: 'Default Theme',
-      //           base: '/reference/default-theme-',
-      //           items: [
-      //             { text: 'Overview', link: 'config' },
-      //             { text: 'Nav', link: 'nav' },
-      //             { text: 'Sidebar', link: 'sidebar' },
-      //             { text: 'Home Page', link: 'home-page' },
-      //             { text: 'Footer', link: 'footer' },
-      //             { text: 'Layout', link: 'layout' },
-      //             { text: 'Badge', link: 'badge' },
-      //             { text: 'Team Page', link: 'team-page' },
-      //             { text: 'Prev / Next Links', link: 'prev-next-links' },
-      //             { text: 'Edit Link', link: 'edit-link' },
-      //             { text: 'Last Updated Timestamp', link: 'last-updated' },
-      //             { text: 'Search', link: 'search' },
-      //             { text: 'Carbon Ads', link: 'carbon-ads' }
-      //           ]
-      //         }
-      //       ]
-      //     }
-      //   ]
-      // }
+    logo: './chodocs-logo.svg',
+    outline: 'deep',
+    docFooter: {
+      prev: '上一篇',
+      next: '下一篇',
     },
-
-
-    // 编辑
-    // editLink: {
-    //   pattern: 'https://github.com/vuejs/vitepress/edit/main/docs/:path',
-    //   text: 'Edit this page on GitHub'
-    // },
-
-    // 引导到github上
-    // socialLinks: [
-    //   { icon: 'github', link: 'https://github.com/vuejs/vitepress' }
-    // ],
-
+    returnToTopLabel: '返回顶部',
+    outlineTitle: '导航栏',
+    darkModeSwitchLabel: '外观',
+    sidebarMenuLabel: '归档',
+    editLink: {
+      pattern: `${github}/tree/main/docs/:path`,
+      text: '在 GitHub 上编辑此页',
+    },
+    lastUpdatedText: '最后一次更新于',
     footer: {
-      message: '用心去做高质量的专业前端内容网站，欢迎 star ⭐ 让更多人发现',
-      copyright: 'MIT License | 版权所有 © 2022-2023 willsilence'
+      message: `用心去做高质量的专业前端内容网站，欢迎 <a target="_blank" style="color: var(--vp-c-brand)" href="${github}">star ⭐</a> 让更多人发现`,
+      copyright: `<a target="_blank" href="${github}/blob/main/LICENSE">MIT License</a> | 版权所有 © 2022-${new Date().getFullYear()} <a target="_blank" href="${github}">Chocolate and ChoDocs contributors</a>`,
     },
+    nav: [
+      { text: '💭 学习圈子', link: '/zsxq' },
+      {
+        text: '🔥 专栏',
+        items: [
+          { text: '🔥 前端算法', link: '/algorithm/guide/' },
+          { text: '🔥 设计模式', link: '/patterns/guide/' },
+          { text: '📋 面试大全', link: '/interview/' },
+        ],
+      },
+      {
+        text: '编程',
+        items: [
+          { text: '⭐ 资源导航', link: '/favorites' },
+          { text: '💻 编程学习', link: '/program/' },
+          { text: '🔧 编程工具', link: '/tool/' },
+        ],
+      },
+      {
+        text: '洞见',
+        items: [
+          { text: '✏️ 随笔', link: '/essay/' },
+          { text: '🌱 青葱岁月', link: '/green/ch' },
+        ],
+      },
+      {
+        text: `v${docsVersion}`,
+        items: [
+          { text: '🧱 参与贡献', link: '/contributing' },
+          { text: '🎉 更新日志', link: `${github}/releases` },
+        ],
+      },
+    ],
+    algolia,
+    sidebar,
+    socialLinks,
+  },
+  head: [
+    ['meta', { name: 'referrer', content: 'no-referrer-when-downgrade' }],
+    ['meta', { name: 'keywords', content: keywords }],
+    ['meta', { name: 'author', content: 'Choi Yang' }],
+    ['meta', { property: 'og:type', content: 'article' }],
+    ['meta', { name: 'application-name', content: name }],
+    ['meta', { name: 'apple-mobile-web-app-title', content: name }],
+    ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'default' }],
 
-    // search: {
-    //   provider: 'algolia',
-    //   options: {
-    //     appId: 'A1ORT5RYXK',
-    //     apiKey: '03d5cb67332da2ff17d7e7da2971269a',
-    //     indexName: 'chen-doc', 
-    //     placeholder: '请输入关键词'
-    //   }
-    // },
+    ['link', { rel: 'shortcut icon', href: '/favicon.ico' }],
+    ['link', { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+    ['link', { rel: 'mask-icon', href: '/chodocs-logo.svg', color: '#06f' }],
+    ['meta', { name: 'theme-color', content: '#06f' }],
 
-    // carbonAds: {
-    //   code: 'CEBDT27Y',
-    //   placement: 'vuejsorg'
-    // }
-  }
-})
+    ['link', { rel: 'apple-touch-icon', sizes: '120x120', href: '/images/icons/apple-touch-icon.png' }],
 
-
+    // webfont
+    ['link', { rel: 'dns-prefetch', href: 'https://fonts.googleapis.com' }],
+    ['link', { rel: 'dns-prefetch', href: 'https://fonts.gstatic.com' }],
+    ['link', { rel: 'preconnect', crossorigin: 'anonymous', href: 'https://fonts.googleapis.com' }],
+    ['link', { rel: 'preconnect', crossorigin: 'anonymous', href: 'https://fonts.gstatic.com' }],
+    // og
+    ['meta', { property: 'og:description', content: description }],
+    ['meta', { property: 'og:url', content: site }],
+    ['meta', { property: 'og:locale', content: 'zh_CN' }],
+    // analytics
+    ['script', { 'async': '', 'defer': '', 'data-website-id': `${process.env.UMAMI_WEBSITE_ID || ''}`, 'src': `${process.env.UMAMI_ENDPOINT || ''}` }],
+  ],
+  async buildEnd(siteConfig) {
+    await sitemap({ hostname: 'https://chodocs.cn/' })
+    await genFeed(siteConfig)
+  },
+}))
